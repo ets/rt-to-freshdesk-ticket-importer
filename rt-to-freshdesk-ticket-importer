@@ -42,14 +42,14 @@ doc = Nokogiri::XML(IO.read(File.expand_path(opts[:ticket])).chomp)
 contents = doc.xpath("//Ticket//Transactions//Attachments//Attachment//Content")
 
 description = ""
-doc.xpath("//Ticket//Transactions//Transaction//Attachments//Attachment").each do | attachment |
+doc.xpath("//Attachment").each do | attachment |
 
-  puts attachment.xpath("//ContentType")[0].content
-  if attachment.xpath("//ContentType")[0].content == 'text/plain'
-    puts "hit"
+  if attachment.xpath("ContentType")[0].content == 'text/plain'
+    description += attachment.xpath("Content")[0].content
   end
 end
 
+puts description
 exit
 
 created_at = doc.xpath("//Ticket//Created")[0].content

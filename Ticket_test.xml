@@ -11,11 +11,22 @@
           <ContentType>multipart/alternative</ContentType>
           <Created>2006-07-19 09:37:43</Created>
           <Creator>test@test.com</Creator>
+          <Content>multipart content 1</Content>
         </Attachment>
         <Attachment>
           <id>7154</id>
-          <Content>Hi, test
-</Content>
+          <Content>Plaintext content 1</Content>
+          <ContentEncoding>none</ContentEncoding>
+          <ContentType>text/plain</ContentType>
+          <Created>2006-07-19 09:37:43</Created>
+          <CustomFields />
+          <Parent>7153</Parent>
+          <Subject></Subject>
+          <TransactionId>8866</TransactionId>
+        </Attachment>
+        <Attachment>
+          <id>7154</id>
+          <Content>Plaintext content 2</Content>
           <ContentEncoding>none</ContentEncoding>
           <ContentType>text/plain</ContentType>
           <Created>2006-07-19 09:37:43</Created>
