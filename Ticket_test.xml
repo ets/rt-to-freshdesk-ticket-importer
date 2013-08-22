@@ -1,0 +1,30 @@
+<Ticket>
+  <id>1867</id>
+  <Created>2006-07-19 09:37:43</Created>
+  <Creator>test@test.com</Creator>
+  <Transactions>
+    <Transaction>
+      <id>8866</id>
+      <Attachments>
+        <Attachment>
+          <id>7153</id>
+          <ContentType>multipart/alternative</ContentType>
+          <Created>2006-07-19 09:37:43</Created>
+          <Creator>test@test.com</Creator>
+        </Attachment>
+        <Attachment>
+          <id>7154</id>
+          <Content>Hi, test
+</Content>
+          <ContentEncoding>none</ContentEncoding>
+          <ContentType>text/plain</ContentType>
+          <Created>2006-07-19 09:37:43</Created>
+          <CustomFields />
+          <Parent>7153</Parent>
+          <Subject></Subject>
+          <TransactionId>8866</TransactionId>
+        </Attachment>
+    </Transaction>
+  </Transactions>
+  <Type>ticket</Type>
+</Ticket>
