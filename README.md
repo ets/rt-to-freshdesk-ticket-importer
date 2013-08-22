@@ -8,6 +8,7 @@ First export tickets from rt using https://github.com/gilesw/rt-ticket-import-ex
 # Dependencies
 
 gem install trollop
+gem install nokogiri
 
 # Example run
 
