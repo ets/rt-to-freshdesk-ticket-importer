@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'English'
+require 'trollop'
+require 'nokogiri'
+require 'csv'
+require_relative 'freshdesk'
+
+def verbose(string_to_output)
+  puts string_to_output if $verbose
+end
+# Translate a set of Level 1-4 to freshdesk priority ids (1 being low)
+def convert_rt_priority_to_freshdesk (rt_priority)
+  return 1 if rt_priority.to_i == 4
+  return 2 if rt_priority.to_i == 3
+  return 3 if rt_priority.to_i == 2
+  return 4 if rt_priority.to_i == 1
+end
+
+opts = Trollop::options do
+  version "1.0"
+  banner <<-EOS
+  #{File.basename($0)}
+  Description: Import an exported UserVoice csv into freshdesk.
+  --type: takes values ['articles','tickets','users','suggestions']
+
+  Usage:
+  #{File.basename($0)} [options]
+
+  where [options] are:
+  EOS
+  opt :verbose, "Verbose output"
+  opt :username , "Freshdesk username" , :type => String, :required => true
+  opt :password, "Freshdesk password" , :type => String, :required => true
+  opt :domain, "Freshdesk domain" , :type => String, :default => "myorg.freshdesk.com", :required => true
+  opt :type, "Type of CSV export", :type => String, :required => true
+  opt :csv, "csv file to read from", :type => String, :required => true
+
+end
+$verbose = opts[:verbose]
+verbose "http://#{opts[:domain]}"
+productSolutionCategory = "5000118770"
+productSolutionFolders = Hash.new()
+client = Freshdesk.new("http://#{opts[:domain]}/", opts[:username], opts[:password] )
+
+doc = Nokogiri::XML(client.get_solution_folders("categories/#{productSolutionCategory}/folders").chomp)
+doc.xpath("//solution-category//folders/solution-folder").each do | folder |
+  productSolutionFolders[folder.xpath("id")[0].content] = folder.xpath("name")[0].content
+end
+
+CSV::Converters[:blank_to_nil] = lambda do |field|
+  field && field.empty? ? nil : field
+end
+#doc = CSV.new(csv, :headers => true, :header_converters => :symbol, :converters => [:all, :blank_to_nil])
+csv = CSV.parse(File.read( File.expand_path(opts[:csv]) ), :headers => true, :header_converters => :symbol)
+csv.each do |row|
+  entry = row.to_hash
+  case opts[:type]
+  when "articles"    
+    if !entry[:section].empty? && !productSolutionFolders.has_key?(entry[:section])
+      response = client.post_solution_folders( {:name => entry[:section], :visibility => 1},"categories/#{productSolutionCategory}/folders" )
+      puts response
+      return
+    end
+    #client.post_solutions(:title => entry[:question],:status => entry[:published]? 2 : 1,:description => entry[:answer_html], entry[:section] )
+  when "tickets"
+    #client.post_tickets(:email => email.to_s.downcase, :priority => priority, :source => 1, :description => description, :status => 5 ,:created_at => created_at )
+  when "users"
+  when "suggestions"
+  else 
+    puts "Unknown type: #{opts[:type]} "
+  end
+end
+
+

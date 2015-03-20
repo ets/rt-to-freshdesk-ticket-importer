@@ -1,9 +1,9 @@
-rt-to-freshdesk-ticket-importer
+uservoice-to-freshdesk-importer
 ===============================
 
 # Overview
 
-First export tickets from rt using https://github.com/gilesw/rt-ticket-import-export
+First export tickets from uservoice using their portal
 
 # Dependencies
 
@@ -12,5 +12,5 @@ gem install nokogiri
 
 # Example run
 
-./rt-to-freshdesk-ticket-importer --ticket Ticket_test.xml
+./uv-to-fd-importer --data [exported-data.csv]
 
