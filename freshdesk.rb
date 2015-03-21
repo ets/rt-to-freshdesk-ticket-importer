@@ -127,7 +127,6 @@ class Freshdesk
           end
         }
       end
-      p uri
       
       begin
         options = @auth.merge(
@@ -192,7 +191,6 @@ class Freshdesk
       }
     end    
     uri = File.join(@base_url + "solution/categories/#{category}/folders/#{folder}/articles.xml")
-    p uri
     
     begin
       options = @auth.merge(

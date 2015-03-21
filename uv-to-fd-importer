@@ -67,8 +67,10 @@ csv.each do |row|
           client.post_solution_article( {:title => entry[:question],:status => entry[:published]? 2 : 1,:description => entry[:answer_html], :folder_id => productSolutionFolders[entry[:section]]},  productSolutionCategory, productSolutionFolders[entry[:section]] )
     end
   when "tickets"
-    #client.post_tickets(:email => email.to_s.downcase, :priority => priority, :source => 1, :description => description, :status => 5 ,:created_at => created_at )
+    client.post_tickets(:email => entry[:email], :name => entry[:name], :subject => entry[:subject], :description => entry[:text], :status => entry[:state] == "open" ? 2 : 5, :priority => 3, :source => 1)
   when "users"
+    #Yuck! FreshDesk auto delivers an email to each user upon creation.... sigh...
+    #client.post_users(:email => entry[:email], :name => entry[:name] )
   when "suggestions"
   else 
     puts "Unknown type: #{opts[:type]} "
