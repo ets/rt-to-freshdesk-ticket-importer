@@ -153,6 +153,67 @@ class Freshdesk
       response
     end
   end
+  
+  def post_solution_folder(parmMap,category)
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.send("solution_folder") {
+        parmMap.each do |key, value|
+          xml.send(key, value)
+        end
+      }
+    end    
+    uri = File.join(@base_url + "solution/categories/#{category}/folders.xml")
+    
+    begin
+      options = @auth.merge(
+        :method => :post,
+        :payload => builder.to_xml,
+        :headers => {:content_type => "text/xml"},
+        :url => uri
+      )
+      response = RestClient::Request.execute(options)
+    rescue RestClient::UnprocessableEntity
+      raise AlreadyExistedError, "Entry already existed"
+    rescue RestClient::InternalServerError
+      raise ConnectionError, "Connection to the server failed. Please check hostname"
+    rescue RestClient::Found
+      raise ConnectionError, "Connection to the server failed. Please check username/password"
+    rescue Exception
+      raise
+    end
+    response
+  end
+  def post_solution_article(parmMap,category, folder)
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.send("solution_article") {
+        parmMap.each do |key, value|
+          xml.send(key, value)
+        end
+      }
+    end    
+    uri = File.join(@base_url + "solution/categories/#{category}/folders/#{folder}/articles.xml")
+    p uri
+    
+    begin
+      options = @auth.merge(
+        :method => :post,
+        :payload => builder.to_xml,
+        :headers => {:content_type => "text/xml"},
+        :url => uri
+      )
+      response = RestClient::Request.execute(options)
+    rescue RestClient::UnprocessableEntity
+      raise AlreadyExistedError, "Entry already existed"
+    rescue RestClient::InternalServerError
+      raise ConnectionError, "Connection to the server failed. Please check hostname"
+    rescue RestClient::Found
+      raise ConnectionError, "Connection to the server failed. Please check username/password"
+    rescue Exception
+      raise
+    end
+    response
+  end
+
 
   # Freshdesk API client support "PUT" with key, value parameter
   #

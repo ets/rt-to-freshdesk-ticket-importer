@@ -41,11 +41,11 @@ $verbose = opts[:verbose]
 verbose "http://#{opts[:domain]}"
 productSolutionCategory = "5000118770"
 productSolutionFolders = Hash.new()
-client = Freshdesk.new("http://#{opts[:domain]}/", opts[:username], opts[:password] )
+client = Freshdesk.new("https://#{opts[:domain]}/", opts[:username], opts[:password] )
 
 doc = Nokogiri::XML(client.get_solution_folders("categories/#{productSolutionCategory}/folders").chomp)
 doc.xpath("//solution-category//folders/solution-folder").each do | folder |
-  productSolutionFolders[folder.xpath("id")[0].content] = folder.xpath("name")[0].content
+  productSolutionFolders[folder.xpath("name")[0].content] = folder.xpath("id")[0].content
 end
 
 CSV::Converters[:blank_to_nil] = lambda do |field|
@@ -57,12 +57,15 @@ csv.each do |row|
   entry = row.to_hash
   case opts[:type]
   when "articles"    
-    if !entry[:section].empty? && !productSolutionFolders.has_key?(entry[:section])
-      response = client.post_solution_folders( {:name => entry[:section], :visibility => 1},"categories/#{productSolutionCategory}/folders" )
-      puts response
-      return
+    if !entry[:section].empty? 
+      if !productSolutionFolders.has_key?(entry[:section])
+        p "Creating new Solution Folder for #{entry[:section]}"
+        response = client.post_solution_folder( {:name => entry[:section], :visibility => 1},productSolutionCategory )
+        doc = Nokogiri::XML(response)
+        productSolutionFolders[entry[:section]] = doc.xpath("//solution-folder//id")[0].content
+      end
+          client.post_solution_article( {:title => entry[:question],:status => entry[:published]? 2 : 1,:description => entry[:answer_html], :folder_id => productSolutionFolders[entry[:section]]},  productSolutionCategory, productSolutionFolders[entry[:section]] )
     end
-    #client.post_solutions(:title => entry[:question],:status => entry[:published]? 2 : 1,:description => entry[:answer_html], entry[:section] )
   when "tickets"
     #client.post_tickets(:email => email.to_s.downcase, :priority => priority, :source => 1, :description => description, :status => 5 ,:created_at => created_at )
   when "users"
