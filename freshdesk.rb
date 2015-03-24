@@ -257,7 +257,7 @@ class Freshdesk
     end
   end
 
-  [:tickets, :ticket_fields, :ticket_notes, :users, :forums, :solution_categories, :solution_folders, :companies, :time_sheets].each do |a|
+  [:tickets, :ticket_fields, :ticket_notes, :users, :forums, :topics, :solution_categories, :solution_folders, :companies, :time_sheets].each do |a|
     fd_define_get a
     fd_define_post a
     fd_define_delete a
@@ -279,6 +279,7 @@ class Freshdesk
   def mapping(method_name, id = nil)
     case method_name
       when "tickets" then File.join(@base_url + "helpdesk/tickets.xml")
+      when "topics" then File.join(@base_url + "discussions/topics.xml")
       when "user_ticket" then File.join(@base_url + "helpdesk/tickets/user_ticket.xml")
       when "ticket_fields" then File.join(@base_url, "ticket_fields.xml")
       when "ticket_notes" then File.join(@base_url, "helpdesk/tickets/#{id}/notes.xml")
@@ -298,6 +299,7 @@ class Freshdesk
       when "ticket_fields" then "helpdesk-ticket-fields"
       when "ticket_notes" then "helpdesk_note"
       when "users" then "user"
+      when "topics" then "topic"
       when "companies" then "customer"
       when "solution_folders" then "solution_folder"
       else raise StandardError, "No root object for this call"

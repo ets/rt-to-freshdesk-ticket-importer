@@ -6,6 +6,11 @@ require 'nokogiri'
 require 'csv'
 require_relative 'freshdesk'
 
+# Account specific configuration - use your values here.
+productSolutionCategory = "5000118770" # This is the category you want your imported "Articles" & corresponding "Folders" to be created under
+forumForSuggestions = "5000223489" #This is the forum you want your "Suggestions" imported into
+
+
 def verbose(string_to_output)
   puts string_to_output if $verbose
 end
@@ -38,8 +43,7 @@ opts = Trollop::options do
 
 end
 $verbose = opts[:verbose]
-verbose "http://#{opts[:domain]}"
-productSolutionCategory = "5000118770"
+verbose "https://#{opts[:domain]}"
 productSolutionFolders = Hash.new()
 client = Freshdesk.new("https://#{opts[:domain]}/", opts[:username], opts[:password] )
 
@@ -72,6 +76,7 @@ csv.each do |row|
     #Yuck! FreshDesk auto delivers an email to each user upon creation.... sigh...
     #client.post_users(:email => entry[:email], :name => entry[:name] )
   when "suggestions"
+    client.post_topics(:sticky => 0, :locked => 0, :forum_id => forumForSuggestions, :title => entry[:title], :body_html => entry[:description])
   else 
     puts "Unknown type: #{opts[:type]} "
   end
